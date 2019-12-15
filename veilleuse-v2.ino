@@ -21,6 +21,9 @@ int startedMode = 0;
 int buttonState;             // the current reading from the input pin
 int lastButtonState = HIGH;   // the previous reading from the input pin
 
+int elapsedTime = millis();
+int goingToSleepAfterTime = 60 * 15 * 1000; // In milliseconds : 15min
+
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
@@ -33,10 +36,9 @@ void setup() {
     Serial.begin(115200);//Start Serial Comunication
   }
   strip.begin();
-  strip.setBrightness(60);
+  strip.setBrightness(45);
   
   pinMode(interruptPin,INPUT_PULLUP);//Set pin d2 to input using the buildin pullup resistor
-    
 }
 
 void loop() { 
@@ -46,7 +48,7 @@ void loop() {
 
 void startup(){
   modeNumber = 1;
-  
+  elapsedTime = millis();
 }
 
 void switchMode() {
@@ -54,6 +56,10 @@ void switchMode() {
 
  if(DEBUG_MODE_ENABLED){
     Serial.println("Mode "+String(modeNumber) + " / "+String(startedMode));
+ }
+
+ if(millis() > (elapsedTime + goingToSleepAfterTime)){
+    Going_To_Sleep(); 
  }
  
  if(modeNumber == SLEEP_MODE){
